@@ -34,6 +34,7 @@ namespace DownloadFileWithJWTToken
             Configuration.Bind("Settings", setting);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddDataProtection();
 
             services.AddAuthentication(options =>
             {

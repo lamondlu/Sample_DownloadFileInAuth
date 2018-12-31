@@ -46,7 +46,7 @@
                     let objectUrl = window.URL.createObjectURL(blobby);
 
                     anchor.href = objectUrl;
-                    anchor.download = 'some-file.txt';
+                    anchor.download = 'helloWorld.txt';
                     anchor.click();
 
                     window.URL.revokeObjectURL(objectUrl);
@@ -54,7 +54,16 @@
         }
 
         function dpDownload() {
-
+            $.ajax({
+                url: 'api/file_links/' + fileId,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", "Bearer " + token);
+                },
+                method: 'GET',
+                success: function (encryptedId) {
+                    window.open('api/raw_files/' + encryptedId);
+                }
+            });
         }
 
         $(document).ready(function () {
