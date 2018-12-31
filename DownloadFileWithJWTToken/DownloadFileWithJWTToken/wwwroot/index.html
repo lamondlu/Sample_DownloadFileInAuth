@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="js/jquery.min.js"></script>
+</head>
+<body>
+    <div id="divToken" style="font-size:10px"></div>
+    <div>
+        <span>下载文件操作</span>
+        <input type="button" value="普通下载" onclick="normalDownload()" />
+        <input type="button" value="使用Blob下载" onclick="blobDownload()" />
+        <input type="button" value="使用Data Protection下载" onclick="dpDownload()" />
+    </div>
+
+    <script type="text/javascript">
+        var token;
+        var fileId = '3D4DAE12-8909-42E8-BC87-E19D5A25D2B1';
+
+        function loadToken() {
+            $.ajax({
+                url: 'api/token',
+                method: 'GET',
+                success: function (data) {
+                    token = data;
+                    $('#divToken').text("Current Token:" + data);
+                }
+            });
+        }
+
+        function normalDownload() {
+            window.open('api/files/' + fileId);
+        }
+
+        function blobDownload() {
+            let anchor = document.createElement("a");
+            let file = 'api/files/' + fileId;
+
+            let headers = new Headers();
+            headers.append('Authorization', 'Bearer ' + token);
+
+            fetch(file, { headers })
+                .then(response => response.blob())
+                .then(blobby => {
+                    let objectUrl = window.URL.createObjectURL(blobby);
+
+                    anchor.href = objectUrl;
+                    anchor.download = 'some-file.txt';
+                    anchor.click();
+
+                    window.URL.revokeObjectURL(objectUrl);
+                });
+        }
+
+        function dpDownload() {
+
+        }
+
+        $(document).ready(function () {
+            loadToken();
+        });
+    </script>
+</body>
+</html>
