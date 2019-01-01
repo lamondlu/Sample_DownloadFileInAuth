@@ -46,7 +46,7 @@ namespace DownloadFileWithJWTToken.Controllers
             if (_files.Any(p => p.FileId == fileId))
             {
                 var matchedFile = _files.First(p => p.FileId == fileId);
-
+                matchedFile.FileContent.Position = 0;
                 return File(matchedFile.FileContent, "text/plain");
             }
 
@@ -73,11 +73,18 @@ namespace DownloadFileWithJWTToken.Controllers
         [Route("~/api/raw_files/{id}")]
         public IActionResult GetRawFile(string id)
         {
-            var rawId = Guid.Parse(this.protector.Unprotect(id));
-            var matchedFile = _files.First(p => p.FileId == rawId);
-            matchedFile.FileContent.Position = 0;
+            try
+            {
+                var rawId = Guid.Parse(this.protector.Unprotect(id));
+                var matchedFile = _files.First(p => p.FileId == rawId);
+                matchedFile.FileContent.Position = 0;
 
-            return File(matchedFile.FileContent, "text/plain", "helloWorld.txt");
+                return File(matchedFile.FileContent, "text/plain", "helloWorld.txt");
+            }
+            catch
+            {
+                return StatusCode(401);
+            }
         }
     }
 }
